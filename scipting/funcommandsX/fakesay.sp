@@ -35,7 +35,7 @@ public Action Command_Fakesay(int client, int args) {
 		ReplyToCommand(client, "Unable to find target");
 		return Plugin_Handled;
 	}
-	CPrintToChatAllEx(itarget, "{teamcolor}%N{default} :  %s", itarget, text);
+	FakeClientCommand(itarget, "say %s", text);
 	LogAction(client, itarget, "%L made %L say %s ", client, itarget, text);
 
 	return Plugin_Handled;
