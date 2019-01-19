@@ -7,7 +7,10 @@
 
 
 *****************************************************************/
-float g_pos[3];
+//float g_pos[3];
+float ZeroVector[3];
+#define HEIGHT_OFFSET 15.0
+#define DISTANCE_OFFSET -30.0
 
 /*****************************************************************
 
@@ -17,7 +20,7 @@ float g_pos[3];
 
 *****************************************************************/
 public void SetupTeleport() {
-	RegAdminCmd("sm_sendaim", Command_Tele, ADMFLAG_SLAY, "sm_sendaim <#userid|name> - Teleports player to where admin is looking");
+	RegAdminCmd("sm_sendaim", cmdSendAim, ADMFLAG_SLAY, "sm_sendaim <#userid|name> - Teleports player to where admin is looking");
 }
 
 /****************************************************************
@@ -27,28 +30,20 @@ public void SetupTeleport() {
 
 
 ****************************************************************/
-public Action Command_Tele(int client, int args) {
+public Action cmdSendAim(int client, int args) {
+	if (!args) {
+		return Plugin_Handled;
+	}
+
 	char target[32];
+	GetCmdArg(1, target, sizeof(target));
+
+	
 	char target_name[MAX_NAME_LENGTH];
 	int target_list[MAXPLAYERS];
 	int target_count;
 	bool tn_is_ml;
 
-	//validate args
-	if (args < 1) {
-		ReplyToCommand(client, "[SM] Usage: sm_sendaim <#userid|name>");
-		return Plugin_Handled;
-	}
-
-	if (!client) {
-		ReplyToCommand(client, "[SM] Cannot teleport from rcon");
-		return Plugin_Handled;
-	}
-
-	//get argument
-	GetCmdArg(1, target, sizeof(target));
-
-	//get target(s)
 	if ((target_count = ProcessTargetString(
 			target,
 			client,
@@ -62,21 +57,57 @@ public Action Command_Tele(int client, int args) {
 		return Plugin_Handled;
 	}
 
-	if (!SetTeleportEndPoint(client)) {
+	float vOrigin[3];
+	if (!SetTeleportEndPoint(client, vOrigin)) {
+		PrintToChat(client, "Unable to teleport client to location");
 		return Plugin_Handled;
 	}
 
 	for (int i = 0; i < target_count; i++) {
-		PerformTeleport(client, target_list[i], g_pos);
+		TeleportEntity(target_list[i], vOrigin, NULL_VECTOR, ZeroVector);
 	}
-
-	ShowActivity2(client, "[SM] ", "%t", "was Teleported",  target_name);
 
 	return Plugin_Handled;
 }
 
-public bool TraceEntityFilterPlayer(int entity, int contentsMask) {
-	return entity > GetMaxClients() || !entity;
+bool SetTeleportEndPoint(int client, float vOrigin[3]) {
+	float vStart[3];
+	float vAngles[3];
+	float vPos[3];
+
+	GetClientEyePosition(client, vStart);
+	GetClientEyeAngles(client, vAngles);
+	GetClientAbsOrigin(client, vPos);
+	vPos[2] += 5.0;
+
+	TR_TraceRayFilter(vStart, vAngles, MASK_ALL, RayType_Infinite, TeleportTraceFilter, client);
+
+	bool result;
+	if (TR_DidHit()) {
+		TR_GetEndPosition(vOrigin);
+
+		float vForward[3];
+		float vUp[3];
+
+		MakeVectorFromPoints(vStart, vOrigin, vPos);
+		GetVectorAngles(vPos, vAngles);
+
+		GetAngleVectors(vAngles, vForward, NULL_VECTOR, vUp);
+		NegateVector(vForward);
+		NegateVector(vUp);
+		ScaleVector(vForward, 40.0);
+		ScaleVector(vUp, 15.0);
+
+		int count;
+		while (!(result = FindValidTeleportDestination(client, vOrigin, vOrigin)) && count++ < 15) {
+			AddVectors(vOrigin, vForward, vOrigin);
+			AddVectors(vOrigin, vUp, vOrigin);
+			ScaleVector(vForward, 0.8);
+			ScaleVector(vUp, 0.7);
+		}
+	}
+
+	return result;
 }
 
 public Action DeleteParticles(Handle timer, any particle) {
@@ -96,36 +127,83 @@ public Action DeleteParticles(Handle timer, any particle) {
 
 
 *****************************************************************/
-bool SetTeleportEndPoint(int client) {
-	float vAngles[3];
-	float vOrigin[3];
-	float vBuffer[3];
-	float vStart[3];
-	float Distance;
+// Thanks to nosoop for this function
+bool FindValidTeleportDestination(int client, const float vecPosition[3], float vecDestination[3]) {
+	float vecMins[3], vecMaxs[3];
+	GetEntPropVector(client, Prop_Send, "m_vecMins", vecMins);
+	GetEntPropVector(client, Prop_Send, "m_vecMaxs", vecMaxs);
 
-	GetClientEyePosition(client, vOrigin);
-	GetClientEyeAngles(client, vAngles);
-
-    //get endpoint for teleport
-	Handle trace = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_SHOT, RayType_Infinite, TraceEntityFilterPlayer);
-
-	if (TR_DidHit(trace)) {
-   	 	TR_GetEndPosition(vStart, trace);
-		GetVectorDistance(vOrigin, vStart, false);
-		Distance = -35.0;
-   	 	GetAngleVectors(vAngles, vBuffer, NULL_VECTOR, NULL_VECTOR);
-		g_pos[0] = vStart[0] + (vBuffer[0]*Distance);
-		g_pos[1] = vStart[1] + (vBuffer[1]*Distance);
-		g_pos[2] = vStart[2] + (vBuffer[2]*Distance);
+	if (GetClientButtons(client) & IN_DUCK) {
+		vecMaxs[2] += 20;
 	}
-	else {
-		PrintToChat(client, "[SM] %s", "Could not teleport player");
-		delete trace;
-		return false;
+	
+	TR_TraceHullFilter(vecPosition, vecPosition, vecMins, vecMaxs, MASK_PLAYERSOLID, TeleportTraceFilter, client);
+	
+	bool valid = !TR_DidHit();
+	
+	if (valid) {
+		vecDestination = vecPosition;
+		return true;
 	}
+	
+	// Basic unstuck handling.
+	/** 
+	 * Basically we treat the corners and center edges of the player's bounding box as potential
+	 * teleport destination candidates.
+	 */
+	float vecTestPosition[3];
+	for (int z = 0; z < 2; z++) {
+		float zpos;
+		switch (z) {
+			case 0: {
+				zpos = 10.0;
+			}
+			case 1: {
+				// less likely to hit the ceiling so do that second
+				zpos = -vecMaxs[2];
+			}
+		}
+		
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				float vecOffset[3];
+				vecOffset[2] = zpos;
+				
+				switch (x) {
+					case -1: {
+						vecOffset[0] = vecMins[0];
+					}
+					case 1: {
+						vecOffset[0] = vecMaxs[0];
+					}
+				}
+				switch (y) {
+					case -1: {
+						vecOffset[1] = vecMins[1];
+					}
+					case 1: {
+						vecOffset[1] = vecMaxs[1];
+					}
+				}
+				
+				AddVectors(vecPosition, vecOffset, vecTestPosition);
+				
+				TR_TraceHullFilter(vecTestPosition, vecTestPosition, vecMins, vecMaxs, MASK_PLAYERSOLID, TeleportTraceFilter, client);
+				
+				valid = !TR_DidHit();
+				
+				if (valid) {
+					vecDestination = vecTestPosition;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
 
-	delete trace;
-	return true;
+public bool TeleportTraceFilter(int entity, int contentsMask, int client) {
+	return entity != client;
 }
 
 void TeleportEffects(float pos[3]) {
@@ -230,9 +308,9 @@ public int MenuHandler_Tele(Menu menu, MenuAction action, int param1, int param2
 		else {
 			char name[32];
 			GetClientName(target, name, sizeof(name));
-
-			if (SetTeleportEndPoint(param1) && IsClientInGame(target) && IsPlayerAlive(target)) {
-				PerformTeleport(param1, target, g_pos);
+			float vOrigin[3];
+			if (SetTeleportEndPoint(param1, vOrigin) && IsClientInGame(target) && IsPlayerAlive(target)) {
+				PerformTeleport(param1, target, vOrigin);
 				ShowActivity2(param1, "[SM] ", "%t", "was Teleported",  name);
 			}
 		}
