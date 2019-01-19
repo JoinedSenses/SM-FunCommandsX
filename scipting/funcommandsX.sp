@@ -34,7 +34,7 @@
 #include <adminmenu>
 
 //Version include from build script
-#define VERSION "2.6"
+#define VERSION "2.7"
 
 //Game detection constants
 #define GAME_OTHER   		0

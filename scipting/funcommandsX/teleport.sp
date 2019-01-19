@@ -313,6 +313,9 @@ public int MenuHandler_Tele(Menu menu, MenuAction action, int param1, int param2
 				PerformTeleport(param1, target, vOrigin);
 				ShowActivity2(param1, "[SM] ", "%t", "was Teleported",  name);
 			}
+			else {
+				PrintToChat(param1, "Unable to perform teleport");
+			}
 		}
 
 		/* Re-draw the menu if they're still valid */
