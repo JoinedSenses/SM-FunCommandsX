@@ -3,208 +3,258 @@
 	"Disco on message"
 	{
 		"en"			"Disco mode! Get down and boogie!"
+		"pt"			"Modo discoteca! Hora de dançar!"
 	}
 	"Explode player"
 	{
 		"en"			"Explode player"
+		"pt"			"Explodir jogador"
 	}
 	"was exploded"
 	{
 		"#format"		"{1:s}"
 		"en"			"'{1}' was exploded"
+		"pt"			"'{1}' foi explodido"
 	}
 	"Enabled friendly fire"
 	{
 		"en"			"Enabled friendly fire"
+		"pt"			"Fogo amigo ativado"
 	}
 	"Disabled friendly fire"
 	{
 		"en"			"Disabled friendly fire"
+		"pt"			"Fogo amigo desativado"
 	}
 	"Friendly Fire Off"
 	{
 		"en"			"Friendly Fire Off"
+		"pt"			"Fogo amigo desligado"
 	}
 	"Friendly Fire On"
 	{
 		"en"			"Friendly Fire On"
+		"pt"			"Fogo amigo ligado"
 	}
 	"Toggled happy on target"
 	{
 		"#format"		"{1:s}"
-		"en"			"Toggled happy on target '{1}'"
+		"en"			"Toggled Happy on target '{1}'"
+		"pt"			"Alterado modo Feliz em '{1}'"
 	}
 	"Happy player"
 	{
 		"en"			"Happy player"
+		"pt"			"Jogador Feliz"
 	}
 	"was Teleported"
 	{
 		"#format"		"{1:s}"
 		"en"			"'{1}' was teleported"
+		"pt"			"'{1}' foi teleportado"
 	}
 	"Teleport player"
 	{
 		"en"			"Teleport player"
+		"pt"			"Teleportar jogador"
 	}
 	"made the color"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"Made '{1}' the color '{2}'"
+		"pt"			"Alterada cor de '{1}' para '{2}'"
 	}
 	"Color"
 	{
 		"en"			"Color"
+		"pt"			"Cor"
 	}
 	"Colorize player"
 	{
 		"en"			"Colorize player"
+		"pt"			"Colorir jogador"
 	}
 	"Enabled disco mode"
 	{
 		"en"			"Enabled disco mode"
+		"pt"			"Ativado modo Discoteca"
 	}
 	"Disabled disco mode"
 	{
 		"en"			"Disabled disco mode"
+		"pt"			"Desativado modo Discoteca"
 	}
 	"Disco Mode Off"
 	{
 		"en"			"Disco Mode Off"
+		"pt"			"Modo  discoteca desligado"
 	}
 	"Disco Mode On"
 	{
 		"en"			"Disco Mode On"
+		"pt"			"Modo discoteca ligado"
 	}
 	"Toggled invisible on target"
 	{
 		"#format"		"{1:s}"
 		"en"			"Toggled invisible on target '{1}'"
+		"pt"			"Alterada invisibilidade em '{1}'"
 	}
 	"Set alpha on target"
 	{
 		"#format"		"{1:s},{2:i}"
 		"en"			"Set alpha on target '{1}' to {2}"
+		"pt"			"Definida transparencia em '{1}' para '{2}'"
 	}
 	"Invisible player"
 	{
 		"en"			"Invisible player"
+		"pt"			"Jogador invisivel"
 	}
 	"Invisible player only"
 	{
 		"en"			"Invisible player only"
+		"pt"			"Apenas jogador invisivel"
 	}
 	"Set player alpha"
 	{
 		"en"			"Set player alpha"
+		"pt"			"Definir transparecia de jogador"
 	}
 	"was overlayed"
 	{
 		"#format"		"{1:s},{2:s}"
 		"en"			"Toggled overlay {2} on target {1}"
+		"pt"			"Ativado sobreposição {2} no alvo {1}"
 	}
 	"color_normal"
 	{
 		"en"			"normal"
+		"pt"			"sem cores"
 	}
 	"color_black"
 	{
 		"en"			"black"
+		"pt"			"preto"
 	}
 	"color_red"
 	{
 		"en"			"red"
+		"pt"			"vermelho"
 	}
 	"color_green"
 	{
 		"en"			"green"
+		"pt"			"verde"
 	}
 	"color_blue"
 	{
 		"en"			"blue"
+		"pt"			"azul"
 	}
 	"color_yellow"
 	{
 		"en"			"yellow"
+		"pt"			"amarelo"
 	}
 	"color_purple"
 	{
 		"en"			"purple"
+		"pt"			"roxo"
 	}
 	"color_cyan"
 	{
 		"en"			"cyan"
+		"pt"			"ciano"
 	}
 	"color_orange"
 	{
 		"en"			"orange"
+		"pt"			"laranja"
 	}
 	"color_pink"
 	{
 		"en"			"pink"
+		"pt"			"rosa"
 	}
 	"color_olive"
 	{
 		"en"			"olive"
+		"pt"			"verde azeitona"
 	}
 	"color_lime"
 	{
 		"en"			"lime"
+		"pt"			"verde lima"
 	}
 	"color_violet"
 	{
 		"en"			"violet"
+		"pt"			"violeta"
 	}
 	"color_lightblue"
 	{
 		"en"			"lightblue"
+		"pt"			"azul claro"
 	}
 	"color_silver"
 	{
 		"en"			"silver"
+		"pt"			"prata"
 	}
 	"color_chocolate"
 	{
 		"en"			"chocolate"
+		"pt"			"chocolate"
 	}
 	"color_saddlebrown"
 	{
 		"en"			"saddlebrown"
+		"pt"			"marrom sela"
 	}
 	"color_indigo"
 	{
 		"en"			"indigo"
+		"pt"			"azul anil"
 	}
 	"color_ghostwhite"
 	{
 		"en"			"ghostwhite"
+		"pt"			"branco fantasma"
 	}
 	"color_thistle"
 	{
 		"en"			"thistle"
+		"pt"			"cardo"
 	}
 	"color_aliceblue"
 	{
 		"en"			"aliceblue"
+		"pt"			"azul alice"
 	}
 	"color_steelblue"
 	{
 		"en"			"steelblue"
+		"pt"			"azul metal"
 	}
 	"color_teal"
 	{
 		"en"			"teal"
+		"pt"			"verde azulado"
 	}
 	"color_gold"
 	{
 		"en"			"gold"
+		"pt"			"ouro"
 	}
 	"color_tan"
 	{
 		"en"			"tan"
+		"pt"			"bronzeado"
 	}
 	"color_tomato"
 	{
 		"en"			"tomato"
+		"pt"			"tomate"
 	}
 }
